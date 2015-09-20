@@ -1,15 +1,86 @@
 # Description:
-#   Example scripts for you to examine and try out.
+#   XurBot is a Hubot-variant written for Slack. When tagged in a chat, 
+#	XurBot will respond with either a random quote when he is "gone" from Destiny, or a list of his items for sale.
 #
 # Notes:
-#   They are commented out by default, because most of them are pretty silly and
-#   wouldn't be useful and amusing enough for day to day huboting.
-#   Uncomment the ones you want to try and experiment with.
-#
-#   These are from the scripting documentation: https://github.com/github/hubot/blob/master/docs/scripting.md
+#   URLS:
+#		- REAL: https://www.bungie.net/platform/destiny/advisors/xur/?definitions=true
+#		- OTHER: https://lyle.smu.edu/~calbright/xurbot/exampleData.json
+#			- For testing when Xur is gone and the real endpoint has no data
+#	
 
 module.exports = (robot) ->
+	
+	#	Quotes for when Xur gets tagged in chat but has not "arrived" in destiny yet.
+	XurQuotes = [
+		"So lonely here.",
+		"I am only an Agent. The Nine rule beyond the Jovians.",
+		"I cannot explain what the Nine are. They are... very large. I cannot explain. The fault is mine, not yours.",
+		"I think it is very possible that I am here to help you.",
+		"Each mote of dust tells a story of ancient Earth.",
+		"I think the cells of this body are dying...",
+		"I do not entirely control my movements.",
+		"Some of the cells in this body began on this world, how strange to return.",
+		"There are no birds where I came from. The things that fly... are like shadows.",
+		"I understood my mission when the Nine put it in me, but now I cannot articulate it.",
+		"This is but one end.",
+		"These inner worlds are very strange.",
+		"My movements are to a significant degree dependent on planetary alignments.",
+		"I feel a great many consciousnesses impinging on mine, and all of them so small and lonely.",
+		"Bodies come and go but the cells remember. And if they forget, the Nine remember it for us.",
+		"My function here is to trade, I know this.",
+		"I have told you what I can.",
+		"If I am here, it is The Nine who sent me.",
+		"I may be here.",
+		"May we speak?",
+		"So much Light here, I suppose I feel pain.",
+		"Please.",
+		"Beyond even the outer worlds, the true deep begins.",
+		"My movements are not predictable, even to me!",
+		"We saw the colony fail, not knowing what we saw.",
+		"My will is not my own.",
+		"I am an Agent of the Nine.",
+		"I hope to be here again.",
+		"It is very possible that the Nine intend to help humanity.",
+		"It is my will to speak to you.",
+		"An end will come. We will be there.",
+		"The Awoken did not have a choice. We did.",
+		"This is the Nine.",
+		"Speak with me.",
+		"I may be here when you return.",
+		"I do not know what the Nine want with you.",
+		"There is something inside me that wishes to connect.",
+		"The Nine show you these.",
+		"An end will come. We will be here.",
+		"For organic life to exist it requires constant adaptation.",
+		"Guardian!",
+		"The Nine wish to speak to you.",
+		"Do not be alarmed, I have no reason to cause you harm.",
+		"But it was the Nine who gave us purpose, and it was the Nine who keep us whole.",
+		"We came up from the dust, and burrowed into flesh for warmth, and became... something new.",
+		"I have information. I do not know yet if it's you it is for.",
+		"The pull of the outer worlds is so faint here. The sun is so heavy.",
+		"Your Traveler has a dark mirror.",
+		"You are the one I was sent to find!",
+		"When my mission here is done, the Nine will send for me.",
+		"I came for the Light, perhaps. To understand the Light.",
+		"My movements are not fully under my own control..is it different for you?",
+		"What sort of thing are you?"
+	]
 
+	robot.respond //i, (msg) ->
+		msg.http('https://www.bungie.net/platform/destiny/advisors/xur/?definitions=true').get() (error, response, body) ->
+			data = JSON.parse(body)
+			if !(data.Response.data?)
+				msg.send msg.random XurQuotes
+			else
+				itemCategories = data.Response.data.saleItemCategories
+				for category in itemCategories
+					msg.send category.categoryTitle
+					itemList = category.saleItems
+					for item in itemList
+						msg.send "\t" + item.item.itemHash
+						
   # robot.hear /badger/i, (res) ->
   #   res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
   #
