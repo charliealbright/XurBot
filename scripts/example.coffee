@@ -67,16 +67,6 @@ module.exports = (robot) ->
 		"What sort of thing are you?"
 	]
 
-	#	Quotes for when Xur gets tagged in chat but has not "arrived" in destiny yet.
-	XurAwayQuotes = [
-		"I am not present, Guardian...",
-		"The Nine require me elsewhere.",
-		"I have no wares for you, Guardian....yet.",
-		"Soon, Guardian.",
-		"The time is not right...you will know when I arrive.",
-		"Patience. The time will come.",
-		"I am held up by other matters.",
-	]
 	guardianClasses = 
 		0: "Titan"
 		1: "Hunter"
@@ -84,12 +74,13 @@ module.exports = (robot) ->
 		3: ""
 
 	robot.respond /.*(items|inventory|sale|goods).*/i, (msg) ->
-		responseString = "My wares, Guardian...\n"
+		responseString = ""
 		msg.http('https://www.bungie.net/platform/destiny/advisors/xur/?definitions=true').get() (error, response, body) ->
 			data = JSON.parse(body)
 			if !(data.Response.data?)
-				msg.send msg.random XurAwayQuotes
+				msg.send "_Xur has not yet arrived..._"
 			else
+				responseString += "_Xur has arrived, for now..._\n"
 				itemCategories = data.Response.data.saleItemCategories
 				for category in itemCategories
 					responseString += "\n*" + category.categoryTitle + ":*\n"
@@ -107,8 +98,8 @@ module.exports = (robot) ->
 							"\n"
 				msg.send responseString
 	
-	robot.hear /(^|\s)xur/i, (msg) ->
-		msg.send msg.random XurQuotes
+	robot.respond /@xur/i, (msg) ->
+		msg.send msg.random XurQuotes + "\n"
 						
   # robot.hear /badger/i, (res) ->
   #   res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
