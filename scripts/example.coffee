@@ -98,7 +98,7 @@ module.exports = (robot) ->
 				msg.send responseString
 	
 	robot.respond /.*/i, (msg) ->
-		msg.send msg.random XurQuotes + "\n"
+		msg.send msg.random XurQuotes
 						
   # robot.hear /badger/i, (res) ->
   #   res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
