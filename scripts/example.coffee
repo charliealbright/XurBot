@@ -11,9 +11,8 @@
 
 module.exports = (robot) ->
 	
-	#	Quotes for when Xur gets tagged in chat but has not "arrived" in destiny yet.
+	#	Random quotes for when Xur gets mentioned in chat
 	XurQuotes = [
-		"So lonely here.",
 		"I am only an Agent. The Nine rule beyond the Jovians.",
 		"I cannot explain what the Nine are. They are... very large. I cannot explain. The fault is mine, not yours.",
 		"I think it is very possible that I am here to help you.",
@@ -68,18 +67,48 @@ module.exports = (robot) ->
 		"What sort of thing are you?"
 	]
 
-	robot.respond //i, (msg) ->
+	#	Quotes for when Xur gets tagged in chat but has not "arrived" in destiny yet.
+	XurAwayQuotes = [
+		"I am not present, Guardian...",
+		"The Nine require me elsewhere.",
+		"I have no wares for you, Guardian....yet.",
+		"Soon, Guardian.",
+		"The time is not right...you will know when I arrive.",
+		"Patience. The time will come.",
+		"I am held up by other matters.",
+	]
+	guardianClasses = 
+		0: "Titan"
+		1: "Hunter"
+		2: "Warlock"
+		3: ""
+
+	robot.respond /.*(items|inventory|sale|goods).*/i, (msg) ->
+		responseString = "My wares, Guardian...\n"
 		msg.http('https://www.bungie.net/platform/destiny/advisors/xur/?definitions=true').get() (error, response, body) ->
 			data = JSON.parse(body)
 			if !(data.Response.data?)
-				msg.send msg.random XurQuotes
+				msg.send msg.random XurAwayQuotes
 			else
 				itemCategories = data.Response.data.saleItemCategories
 				for category in itemCategories
-					msg.send category.categoryTitle
+					responseString += "\n*" + category.categoryTitle + ":*\n"
 					itemList = category.saleItems
 					for item in itemList
-						msg.send "\t" + item.item.itemHash
+						hash = item.item.itemHash
+						count = item.item.stackSize
+						currencyHash = item.costs[0].itemHash
+						currency = data.Response.definitions.items[currencyHash]
+						currencyName = currency.itemName
+						currencyCost = item.costs[0].value
+						itemData = data.Response.definitions.items[hash]
+						responseString += "> *" + itemData.itemName + "*" + " _" + guardianClasses[itemData.classType] + " " + itemData.itemTypeName + "_ " +
+							(if count > 1 then "(" + count + ")" else "") + " - " + currencyCost + " " + currencyName + (if currencyCost > 1 then "s" else "") +
+							"\n"
+				msg.send responseString
+	
+	robot.hear /(^|\s)xur/i, (msg) ->
+		msg.send msg.random XurQuotes
 						
   # robot.hear /badger/i, (res) ->
   #   res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
