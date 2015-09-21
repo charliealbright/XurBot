@@ -80,7 +80,6 @@ module.exports = (robot) ->
 			if !(data.Response.data?)
 				msg.send "_Xur has not yet arrived..._"
 			else
-				responseString += "_Xur has arrived, for now..._\n"
 				itemCategories = data.Response.data.saleItemCategories
 				for category in itemCategories
 					responseString += "\n*" + category.categoryTitle + ":*\n"
@@ -98,7 +97,7 @@ module.exports = (robot) ->
 							"\n"
 				msg.send responseString
 	
-	robot.respond /@xur/i, (msg) ->
+	robot.respond /.*/i, (msg) ->
 		msg.send msg.random XurQuotes + "\n"
 						
   # robot.hear /badger/i, (res) ->
