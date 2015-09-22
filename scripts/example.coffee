@@ -96,12 +96,12 @@ module.exports = (robot) ->
 							(if count > 1 then "(" + count + ")" else "") + " - " + currencyCost + " " + currencyName + (if currencyCost > 1 then "s" else "") +
 							"\n"
 				msg.send responseString
-	
-	robot.respond /.*/i, (msg) ->
-		msg.send msg.random XurQuotes
 		
-	robot.respond /.*where.*/i, (msg) ->
+	robot.respond /.*(where|location).*/i, (msg) ->
 		regex = /\/assets\/findxur\/.*\.png/i
 		msg.http('http://www.destinylfg.com/findxur/').get() (error, response, body) ->
 			match = body.match regex
-			msg.send match
+			msg.send "http://www.destinylfg.com" + match[0]
+			
+	robot.respond /.*/i, (msg) ->
+		msg.send msg.random XurQuotes
