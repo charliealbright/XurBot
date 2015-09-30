@@ -11,6 +11,9 @@
 
 module.exports = (robot) ->
 	
+	#	Developer Key for making requests through Bungie's API
+	BUNGIE_API_KEY = "276eb0f983144621a969cf7c07ea61c7"
+	
 	#	Random quotes for when Xur gets mentioned in chat
 	XurQuotes = [
 		"I am only an Agent. The Nine rule beyond the Jovians.",
@@ -75,7 +78,8 @@ module.exports = (robot) ->
 
 	robot.respond /.*(items|inventory|sale|goods).*/i, (msg) ->
 		responseString = ""
-		msg.http('https://www.bungie.net/platform/destiny/advisors/xur/?definitions=true').get() (error, response, body) ->
+		msg.http('https://www.bungie.net/platform/destiny/advisors/xur/?definitions=true')
+		.headers('X-API-Key': BUNGIE_API_KEY).get() (error, response, body) ->
 			data = JSON.parse(body)
 			if !(data.Response.data?)
 				msg.send "_Xur has not yet arrived..._"
